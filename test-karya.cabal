@@ -1,0 +1,92 @@
+name: test-karya
+version: 0.0.1
+cabal-version: >= 2.0
+build-type: Simple
+synopsis: Testing framework.
+description:
+    Tests etc.
+
+category: Haskell, Test
+license: BSD3
+license-file: LICENSE
+author: Evan Laforge
+maintainer: Evan Laforge <qdunkan@gmail.com>
+stability: stable
+tested-with: GHC>=8.0.2
+data-files:
+source-repository head
+    type: git
+    location: git://github.com/elaforge/test-karya.git
+
+library Private
+    hs-source-dirs: private
+    default-language: Haskell2010
+    ghc-options:
+        -Wall -Wno-name-shadowing -Wno-unused-do-bind -Wno-type-defaults
+    exposed-modules:
+        EL.Private.ExtractHs
+        EL.Private.Map
+        EL.Private.PPrint
+        EL.Private.Ranges
+        EL.Private.Regex
+        EL.Private.Seq
+        EL.Private.File
+        EL.Private.Process
+        Global
+    build-depends:
+        base
+        , bytestring
+        , containers
+        , data-ordlist
+        , directory
+        , filepath
+        , text
+        , pcre-heavy >=0.2
+        , pcre-light >=0.4
+        , process
+        -- for pprint
+        , pretty, haskell-src
+
+library
+    hs-source-dirs: src
+    default-language: Haskell2010
+    ghc-options:
+        -Wall -Wno-name-shadowing -Wno-unused-do-bind -Wno-type-defaults
+    build-depends:
+        Private
+
+        , Diff
+        , QuickCheck
+        , base
+        , containers
+        , deepseq
+        , directory
+        , filepath
+        , ghc-prim
+        , text
+        , unix
+
+        -- RunTests
+        , async
+        , process
+    exposed-modules:
+        EL.Test.ApproxEq
+        EL.Test.Global
+        EL.Test.Testing
+        EL.Test.RunTests
+
+executable GenerateRunTests
+    hs-source-dirs: src
+    default-language: Haskell2010
+    ghc-options:
+        -Wall -Wno-name-shadowing -Wno-unused-do-bind -Wno-type-defaults
+    main-is: EL/Test/GenerateRunTests.hs
+    ghc-options: -main-is EL.Test.GenerateRunTests
+    build-depends:
+        Private
+        , test-karya
+
+        , base
+        , containers
+        , text
+        , filepath
