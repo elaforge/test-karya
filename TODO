@@ -1,0 +1,13 @@
+How to run GenerateRunTests?
+
+- Makefile to update when out of date, cabal Setup hooks to run make.
+
+- Like Makefile, but a shell script that does the same thing.
+
+- Use Setup hooks directly.  Does cabal know how to only rebuild when
+necessary?
+
+- HSpec uses a -pgmF program to generate the module.  But I think it runs
+every single time you build tests.  Of course, maybe that's actually pretty
+fast.
+  . pgmF args: OrigSourceName.hs input.hs output.hs

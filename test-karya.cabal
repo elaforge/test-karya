@@ -4,7 +4,7 @@ cabal-version: >= 2.0
 build-type: Simple
 synopsis: Testing framework.
 description:
-    Tests etc.
+    This is Karya's test framework, extracted to be usable standalone.
 
 category: Haskell, Test
 license: BSD3
@@ -88,5 +88,6 @@ executable GenerateRunTests
 
         , base
         , containers
-        , text
+        , directory
         , filepath
+        , text
