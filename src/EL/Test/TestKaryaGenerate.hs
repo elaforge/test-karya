@@ -14,7 +14,7 @@
     run frequently.  Auto tests get an auto- prefix so you can avoid the
     interactive ones.  TODO interactive should be removed
 -}
-module EL.Test.GenerateRunTests (main) where
+module EL.Test.TestKaryaGenerate (main) where
 import qualified Data.List as List
 import qualified Data.Map as Map
 import qualified Data.Char as Char
