@@ -1,5 +1,6 @@
 tags
 /dist/
+/example/dist/
 /dist-newstyle/
 /cabal-dev/
 *.o

@@ -1,0 +1,22 @@
+name: example
+version: 0.0.1
+cabal-version: >= 1.9
+build-type: Simple
+synopsis: test testing tests
+description: Test testing test-karya test framework.
+
+library
+    hs-source-dirs: src
+    exposed-modules:
+        A
+    build-depends: base
+
+test-suite test
+    type: exitcode-stdio-1.0
+    hs-source-dirs: src
+    main-is: RunTests.hs
+    other-modules:
+        A, A_test
+    build-depends:
+        base
+        , test-karya
