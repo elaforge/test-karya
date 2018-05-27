@@ -63,17 +63,17 @@ testName test = Text.intercalate "," tags <> "-" <> testSymName test
 metaPrefix :: Text
 metaPrefix = "===>"
 
-data Flag = List | Jobs ![String] | Subprocess
+data Flag = List | Outputs ![String] | Subprocess
     deriving (Eq, Show)
 
 options :: [GetOpt.OptDescr Flag]
 options =
     [ GetOpt.Option [] ["list"] (GetOpt.NoArg List) "display but don't run"
-    , GetOpt.Option [] ["jobs"]
-        (GetOpt.ReqArg (Jobs . commas) "comma,separated,outputs")
-        "output jobs, each one corresponds to a parallel job"
+    , GetOpt.Option [] ["outputs"]
+        (GetOpt.ReqArg (Outputs . commas) "comma,separated,outputs")
+        "output files, each one corresponds to a parallel job"
     , GetOpt.Option [] ["subprocess"] (GetOpt.NoArg Subprocess)
-        "meant to be driven by --jobs: read test names on stdin"
+        "meant to be driven by --outputs: read test names on stdin"
     ]
     where commas = Seq.split ","
 
@@ -100,7 +100,7 @@ runTests argv0 allTests flags args
         let (serialized, nonserialized) = List.partition
                 ((Testing.Interactive `elem`) . Testing.tags . testModuleMeta)
                 (if isSubprocess then allTests else matches)
-        let outputs = concat [outputs | Jobs outputs <- flags]
+        let outputs = concat [outputs | Outputs outputs <- flags]
         if isSubprocess
             then subprocess nonserialized
             else do

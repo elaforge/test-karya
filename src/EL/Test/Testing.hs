@@ -493,9 +493,10 @@ inTmpDir prefix action = do
     Directory.withCurrentDirectory dir action
 
 -- | All tmp files used by tests should go in this directory.
+--
 -- TODO instead of being hardcoded this should be configured per-project.
 tmpBaseDir :: FilePath
-tmpBaseDir = "build/test/tmp"
+tmpBaseDir = "dist/build/tmp-test"
 
 -- * util
 

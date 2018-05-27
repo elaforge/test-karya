@@ -10,7 +10,11 @@ How to run GenerateRunTests?
 
 * remove the ioHuman and interactive stuff
 - argv0 is wrong, so parallelization probably doesn't work
-- fix tmpBaseDir
+* fix tmpBaseDir
+  . Surely cabal has some way to pass in a tmp dir?
+  . Haha, it's cabal of course not.  Use CPP then.
+  . Well, it would have to come from the testee config, which means putting it
+    in Testing.Config.  Too much bother, just hardcode to dist/build/tmp-test
 
 Interpret the output
   . I need the equivalent of test/run_tests.
@@ -29,3 +33,4 @@ Interpret the output
     is that then debugging isn't interleaved.  But I could write to both the
     output file and stdout.  Or write everything to sdout, only errors to
     stderr.
+  . Or use the parallelization feature, run as a subprocess.
