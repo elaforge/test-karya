@@ -8,8 +8,24 @@ How to run GenerateRunTests?
     fast.
     . pgmF args: OrigSourceName.hs input.hs output.hs
 
+* remove the ioHuman and interactive stuff
+- argv0 is wrong, so parallelization probably doesn't work
+- fix tmpBaseDir
+
 Interpret the output
   . I need the equivalent of test/run_tests.
   . Can I embed that logic in RunTest itself?  The problem is I want to write
     to stdout, and then check that stdout.  It's hard to do that when cabal is
     redirecting stdout.
+  . Does cabal have any more flexible way to run tests?
+    Looks like no, just 'detailed', which is even less flexible, since it
+    requires the tests to be some cabal data structure.
+  . I would like a runner that runs the test binary, then runs something else
+    with access to the log.
+  . Can I redirect stdout to a file temporarily?  I could do
+    withStdout (open "output") $ runTests ...
+    check "output"
+  . I can have tests write to a file via 'success' and 'failure'.  The problem
+    is that then debugging isn't interleaved.  But I could write to both the
+    output file and stdout.  Or write everything to sdout, only errors to
+    stderr.

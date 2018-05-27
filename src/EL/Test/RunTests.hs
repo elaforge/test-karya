@@ -63,19 +63,17 @@ testName test = Text.intercalate "," tags <> "-" <> testSymName test
 metaPrefix :: Text
 metaPrefix = "===>"
 
-data Flag = List | NonInteractive | Jobs ![String] | Subprocess
+data Flag = List | Jobs ![String] | Subprocess
     deriving (Eq, Show)
 
 options :: [GetOpt.OptDescr Flag]
 options =
     [ GetOpt.Option [] ["list"] (GetOpt.NoArg List) "display but don't run"
     , GetOpt.Option [] ["jobs"]
-        (GetOpt.ReqArg (Jobs . commas) "comma separated outputs")
+        (GetOpt.ReqArg (Jobs . commas) "comma,separated,outputs")
         "output jobs, each one corresponds to a parallel job"
     , GetOpt.Option [] ["subprocess"] (GetOpt.NoArg Subprocess)
         "meant to be driven by --jobs: read test names on stdin"
-    , GetOpt.Option [] ["noninteractive"] (GetOpt.NoArg NonInteractive)
-        "run interactive tests noninteractively by assuming they all passed"
     ]
     where commas = Seq.split ","
 
@@ -98,9 +96,6 @@ runTests argv0 allTests flags args
     | List `elem` flags =
         mapM_ Text.IO.putStrLn $ List.sort $ map testName matches
     | otherwise = do
-        when (NonInteractive `elem` flags) $
-            Testing.modifyTestConfig $ \config ->
-                config { Testing.configSkipHuman = True }
         let isSubprocess = Subprocess `elem` flags
         let (serialized, nonserialized) = List.partition
                 ((Testing.Interactive `elem`) . Testing.tags . testModuleMeta)

@@ -17,7 +17,7 @@ module EL.Test.Testing (
     , throws
 
     -- ** io assertions
-    , ioEqual, ioHuman, pause
+    , ioEqual
 
     -- ** low level
     , success, failure
@@ -56,7 +56,6 @@ import GHC.Stack (HasCallStack)
 
 import qualified System.Directory as Directory
 import System.FilePath ((</>))
-import qualified System.IO as IO
 import qualified System.IO.Unsafe as Unsafe
 import qualified System.Posix.IO as IO
 import qualified System.Posix.Temp as Temp
@@ -74,7 +73,9 @@ import qualified EL.Private.Seq as Seq
 
 {-# NOINLINE testConfig #-}
 testConfig :: IORef.IORef Config
-testConfig = Unsafe.unsafePerformIO (IORef.newIORef (Config "no-test" False))
+testConfig = Unsafe.unsafePerformIO $ IORef.newIORef $ Config
+    { configTestName = "no-test"
+    }
 
 modifyTestConfig :: (Config -> Config) -> IO ()
 modifyTestConfig = IORef.modifyIORef testConfig
@@ -90,10 +91,6 @@ withTestName name action = do
 data Config = Config {
     -- | Keep the test name so I can report it in 'success' in 'failure'.
     configTestName :: !Text
-    -- | If True, skip through human-feedback tests.  That way I can at least
-    -- get the coverage and check for crashes, even if I can't verify the
-    -- results.
-    , configSkipHuman :: !Bool
     } deriving (Show)
 
 check :: HasCallStack => Text -> Bool -> IO Bool
@@ -363,28 +360,6 @@ ioEqual ioVal expected = do
     val <- ioVal
     equal val expected
 
--- | Only a human can check these things.
-ioHuman :: HasCallStack => String -> IO a -> IO a
-ioHuman expectedMsg op = do
-    putStrLn $ "should see: " ++ expectedMsg
-    humanGetChar
-    result <- op
-    putStr "  ... ok (y/n/q)? "
-    c <- humanGetChar
-    putChar '\n'
-    case c of
-        'y' -> success $ "saw " <> showt expectedMsg
-        'q' -> error "quit test"
-        _ -> failure $ "didn't see " <> showt expectedMsg
-    return result
-
-pause :: String -> IO ()
-pause msg = do
-    putStr $ "pausing, hit almost any key... "
-        ++ if null msg then "" else " -- " ++ msg
-    humanGetChar
-    putStr "\n"
-
 expectRight :: (HasCallStack, Show a) => Either a b -> b
 expectRight (Left v) = error (pshow v)
 expectRight (Right v) = v
@@ -486,19 +461,6 @@ failureColor = ColorCode "\ESC[31m" -- red
 
 successColor :: ColorCode
 successColor = ColorCode "\ESC[32m" -- green
-
--- | getChar with no buffering.
-humanGetChar :: IO Char
-humanGetChar = do
-    skip <- configSkipHuman <$> IORef.readIORef testConfig
-    if skip
-        then return 'y'
-        else do
-            IO.hFlush IO.stdout
-            mode <- IO.hGetBuffering IO.stdin
-            IO.hSetBuffering IO.stdin IO.NoBuffering
-            do { c <- getChar; putChar ' '; return c}
-                `Exception.finally` IO.hSetBuffering IO.stdin mode
 
 -- * pretty
 
