@@ -34,3 +34,5 @@ Interpret the output
     output file and stdout.  Or write everything to sdout, only errors to
     stderr.
   . Or use the parallelization feature, run as a subprocess.
+  . How this works is you call with --outputs.  Then RunTests can have a flag
+    to check the outputs afterwards.

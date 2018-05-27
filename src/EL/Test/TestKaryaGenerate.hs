@@ -42,7 +42,7 @@ main = do
     inputFiles <- find (Char.isUpper . head) ("_test.hs" `List.isSuffixOf`)
         baseDir
     extracted <- ExtractHs.extractFiles extract inputFiles
-    let (warnings, output) = generate outputFile $
+    let (warnings, output) = generate $
             Map.mapKeys (stripPrefix baseDir) extracted
     mapM_ (Text.IO.hPutStrLn IO.stderr) warnings
     progName <- System.Environment.getProgName
@@ -92,16 +92,30 @@ stripPrefix prefix fname = dropWhile (=='/') $
 
 type Warning = Text
 
-generate :: FilePath -> Map FilePath ([Test], HasMeta) -> ([Warning], Text)
-generate outFname extracted = (,) warnings $
+generate :: Map FilePath ([Test], HasMeta) -> ([Warning], Text)
+generate extracted = (,) warnings $
     testTemplate
         (Text.unlines $ map ExtractHs.makeImport (Map.keys fnameTests))
-        (showt (FilePath.dropExtension outFname))
         (Text.intercalate "\n    , " $ makeTests fnameTests)
     where
     (empty, fnameTests) = Map.partition (null . fst) extracted
     warnings = map (("Warning: no (test|profile)_* defs in " <>) . txt)
         (Map.keys empty)
+
+testTemplate :: Text -> Text -> Text
+testTemplate imports allTests =
+    "import qualified EL.Test.RunTests as RunTests\n\
+    \import EL.Test.RunTests (Test(..))\n\
+    \\n"
+    <> imports <> "\n\
+    \\n\
+    \tests :: [Test]\n\
+    \tests = \n\
+    \    [ " <> allTests <> "\n\
+    \    ]\n\
+    \\n\
+    \main :: IO ()\n\
+    \main = RunTests.run tests\n"
 
 data Test  = Test {
     testLineNumber :: !LineNumber
@@ -162,23 +176,3 @@ makeTestLine fname test meta = Text.unwords
         Just fn -> "(Just " <> ExtractHs.pathToModule fname <> "." <> fn <> ")"
     ]
     where name = ExtractHs.pathToModule fname <> "." <> testName test
-
-testTemplate :: Text -> Text -> Text -> Text
-testTemplate imports argv0 allTests =
-    "import qualified EL.Test.RunTests as RunTests\n\
-    \import EL.Test.RunTests (Test(..))\n\
-    \\n"
-    <> imports <> "\n\
-    \\n\
-    \-- System.Environment.getProgName strips the dir, so I can't use it to\n\
-    \-- reinvoke.\n\
-    \argv0 :: String\n\
-    \argv0 = " <> argv0 <> "\n\
-    \\n\
-    \tests :: [Test]\n\
-    \tests = \n\
-    \    [ " <> allTests <> "\n\
-    \    ]\n\
-    \\n\
-    \main :: IO ()\n\
-    \main = RunTests.run argv0 tests\n"
