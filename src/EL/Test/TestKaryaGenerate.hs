@@ -3,16 +3,11 @@
     calls the tests.  Test functions are any function starting with @test_@ or
     @profile_@ and immediately followed by @=@ (implying the function has no
     arguments).  This module doesn't distinguish between tests and profiles,
-    but they should presumably be compiled separately since they required
+    but they should presumably be compiled separately since they require
     different flags.
 
     If a module has a function called @initialize@, it will be called as
     @IO ()@ prior to the tests.
-
-    Tests are divided into interactive and auto variants.  Interactive tests
-    want to have a conversation with the user, so they're not appropriate to
-    run frequently.  Auto tests get an auto- prefix so you can avoid the
-    interactive ones.  TODO interactive should be removed
 -}
 module EL.Test.TestKaryaGenerate (main) where
 import qualified Data.List as List
@@ -35,14 +30,14 @@ import Global
 main :: IO ()
 main = do
     args <- System.Environment.getArgs
-    (baseDir, outputFile) <- case args of
-        [origFile, _inputFile, outputFile] ->
-            return (FilePath.takeDirectory origFile, outputFile)
+    (baseDir, outputFile, defaultArgs) <- case args of
+        origFile : _inputFile : outputFile : defaultArgs ->
+            return (FilePath.takeDirectory origFile, outputFile, defaultArgs)
         _ -> error "expected: origFile inputFile outputFile"
     inputFiles <- find (Char.isUpper . head) ("_test.hs" `List.isSuffixOf`)
         baseDir
     extracted <- ExtractHs.extractFiles extract inputFiles
-    let (warnings, output) = generate $
+    let (warnings, output) = generate defaultArgs $
             Map.mapKeys (stripPrefix baseDir) extracted
     mapM_ (Text.IO.hPutStrLn IO.stderr) warnings
     progName <- System.Environment.getProgName
@@ -92,18 +87,19 @@ stripPrefix prefix fname = dropWhile (=='/') $
 
 type Warning = Text
 
-generate :: Map FilePath ([Test], HasMeta) -> ([Warning], Text)
-generate extracted = (,) warnings $
+generate :: [String] -> Map FilePath ([Test], HasMeta) -> ([Warning], Text)
+generate defaultArgs extracted = (,) warnings $
     testTemplate
         (Text.unlines $ map ExtractHs.makeImport (Map.keys fnameTests))
         (Text.intercalate "\n    , " $ makeTests fnameTests)
+        defaultArgs
     where
     (empty, fnameTests) = Map.partition (null . fst) extracted
     warnings = map (("Warning: no (test|profile)_* defs in " <>) . txt)
         (Map.keys empty)
 
-testTemplate :: Text -> Text -> Text
-testTemplate imports allTests =
+testTemplate :: Text -> Text -> [String] -> Text
+testTemplate imports allTests defaultArgs =
     "import qualified EL.Test.RunTests as RunTests\n\
     \import EL.Test.RunTests (Test(..))\n\
     \\n"
@@ -115,7 +111,7 @@ testTemplate imports allTests =
     \    ]\n\
     \\n\
     \main :: IO ()\n\
-    \main = RunTests.run tests\n"
+    \main = RunTests.run " <> showt defaultArgs <> " tests\n"
 
 data Test  = Test {
     testLineNumber :: !LineNumber

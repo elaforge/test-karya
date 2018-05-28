@@ -1,3 +1,9 @@
+- subprocess communication is getting stuck
+  . But why?  I think this should be the same code as karya's version, which
+    doesn't do that.
+  . There's definitely something fishy going on in both cases though, since
+    karya's version sometimes fails on travis.
+
 How to run GenerateRunTests?
   / Makefile to update when out of date, cabal Setup hooks to run make.
   / Like Makefile, but a shell script that does the same thing.
@@ -9,7 +15,8 @@ How to run GenerateRunTests?
     . pgmF args: OrigSourceName.hs input.hs output.hs
 
 * remove the ioHuman and interactive stuff
-- argv0 is wrong, so parallelization probably doesn't work
+/ argv0 is wrong, so parallelization probably doesn't work
+  . Use Environment.getExecutablePath
 * fix tmpBaseDir
   . Surely cabal has some way to pass in a tmp dir?
   . Haha, it's cabal of course not.  Use CPP then.

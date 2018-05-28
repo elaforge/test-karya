@@ -96,10 +96,11 @@ options =
     ]
 
 -- | Called by the generated main function.
-run :: [Test] -> IO ()
-run allTests = do
+run :: [String] -> [Test] -> IO ()
+run defaultArgs allTests = do
     IO.hSetBuffering IO.stdout IO.LineBuffering
     args <- System.Environment.getArgs
+    args <- return $ if null args then defaultArgs else args
     (flags, args) <- case GetOpt.getOpt GetOpt.Permute options args of
         (opts, n, []) -> return (opts, n)
         (_, _, errors) -> quitWithUsage errors
@@ -137,6 +138,7 @@ runTests allTests flags regexes = do
 
 runOutput :: FilePath -> Int -> [Test] -> Bool -> IO Bool
 runOutput outputDir jobs tests check = do
+    Directory.createDirectoryIfMissing True outputDir
     let outputs = [outputDir </> "out" <> show n <> ".stdout" | n <- [1..jobs]]
     runParallel outputs tests
     if check
