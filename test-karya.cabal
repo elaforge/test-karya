@@ -30,6 +30,7 @@ library Private
         EL.Private.Ranges
         EL.Private.Regex
         EL.Private.Seq
+        EL.Private.Then
         EL.Private.File
         EL.Private.Process
         Global
