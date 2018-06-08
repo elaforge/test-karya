@@ -103,23 +103,26 @@ run defaultArgs allTests = do
     args <- return $ if null args then defaultArgs else args
     (flags, args) <- case GetOpt.getOpt GetOpt.Permute options args of
         (opts, n, []) -> return (opts, n)
-        (_, _, errors) -> quitWithUsage errors
+        (_, _, errors) -> quitWithUsage defaultArgs errors
     ok <- runTests allTests flags args
     if ok then System.Exit.exitSuccess else System.Exit.exitFailure
 
-quitWithUsage :: [String] -> IO a
-quitWithUsage errors = do
+quitWithUsage :: [String] -> [String] -> IO a
+quitWithUsage defaultArgs errors = do
     progName <- System.Environment.getProgName
     putStrLn $ "usage: " <> progName <> " [ flags ] regex regex ..."
     putStr $ GetOpt.usageInfo "Run tests that match any regex." options
+    unless (null defaultArgs) $
+        putStrLn $ "\ndefault args provided by generator:\n"
+            <> unwords defaultArgs
     unless (null errors) $
-        putStrLn $ "\nerrors:\n" <> unlines errors
+        putStr $ "\nerrors:\n" <> unlines errors
     System.Exit.exitFailure
 
 runTests :: [Test] -> [Flag] -> [String] -> IO Bool
 runTests allTests flags regexes = do
     when (mbOutputDir == Nothing && CheckOutput `elem` flags) $
-        quitWithUsage ["--check-output requires --output"]
+        quitWithUsage [] ["--check-output requires --output"]
     when (ClearDirs `elem` flags) $ do
         clearDirectory Testing.tmpBaseDir
         whenJust mbOutputDir clearDirectory
