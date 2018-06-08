@@ -35,7 +35,8 @@ library Private
         EL.Private.Process
         Global
     build-depends:
-        base
+        async
+        , base
         , bytestring
         , containers
         , data-ordlist

@@ -1,8 +1,9 @@
-- subprocess communication is getting stuck
+* subprocess communication is getting stuck
   . But why?  I think this should be the same code as karya's version, which
     doesn't do that.
   . There's definitely something fishy going on in both cases though, since
     karya's version sometimes fails on travis.
+  . dist/build/test/test --clear-dirs --output=dist/test-output .
 
 How to run GenerateRunTests?
   / Makefile to update when out of date, cabal Setup hooks to run make.
