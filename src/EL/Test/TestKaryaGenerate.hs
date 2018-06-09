@@ -16,13 +16,13 @@ import qualified Data.Map as Map
 import qualified Data.Text as Text
 import qualified Data.Text.IO as Text.IO
 
-import qualified EL.Private.ExtractHs as ExtractHs
-import qualified EL.Private.Regex as Regex
 import qualified System.Directory as Directory
 import qualified System.Environment
 import qualified System.FilePath as FilePath
 import qualified System.IO as IO
 
+import qualified EL.Private.ExtractHs as ExtractHs
+import qualified EL.Private.Regex as Regex
 import Global
 
 

@@ -20,11 +20,6 @@ import qualified Data.Text.IO as Text.IO
 import qualified Data.Text.Lazy as Text.Lazy
 import qualified Data.Text.Lazy.IO as Text.Lazy.IO
 
-import qualified EL.Private.File as File
-import qualified EL.Private.Process as EL.Process
-import qualified EL.Private.Regex as Regex
-import qualified EL.Private.Seq as Seq
-
 import qualified Numeric
 import qualified System.CPUTime as CPUTime
 import qualified System.Console.GetOpt as GetOpt
@@ -38,6 +33,10 @@ import qualified System.Process as Process
 
 import qualified Text.Read as Read
 
+import qualified EL.Private.File as File
+import qualified EL.Private.Process as EL.Process
+import qualified EL.Private.Regex as Regex
+import qualified EL.Private.Seq as Seq
 import qualified EL.Test.Testing as Testing
 
 import Global

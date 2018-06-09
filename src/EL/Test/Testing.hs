@@ -1,4 +1,3 @@
-{-# LANGUAGE CPP #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleInstances #-}
@@ -38,9 +37,10 @@ module EL.Test.Testing (
     -- * util
     , force
 ) where
-import Control.Monad (unless)
 import qualified Control.DeepSeq as DeepSeq
 import qualified Control.Exception as Exception
+import Control.Monad (unless)
+
 import qualified Data.Algorithm.Diff as Diff
 import qualified Data.IORef as IORef
 import qualified Data.IntMap as IntMap
@@ -53,7 +53,6 @@ import qualified Data.Text.IO as Text.IO
 
 import qualified GHC.Stack as Stack
 import GHC.Stack (HasCallStack)
-
 import qualified System.Directory as Directory
 import System.FilePath ((</>))
 import qualified System.IO.Unsafe as Unsafe
@@ -63,12 +62,12 @@ import qualified System.Posix.Terminal as Terminal
 
 import qualified Test.QuickCheck as QuickCheck
 
-import qualified EL.Test.ApproxEq as ApproxEq
 import qualified EL.Private.Map as EL.Map
 import qualified EL.Private.PPrint as PPrint
 import qualified EL.Private.Ranges as Ranges
 import qualified EL.Private.Regex as Regex
 import qualified EL.Private.Seq as Seq
+import qualified EL.Test.ApproxEq as ApproxEq
 
 
 {-# NOINLINE testConfig #-}
