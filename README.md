@@ -6,5 +6,66 @@ automatic test discovery, diffs, filename:linenumber for failed tests, etc.
 So I wrote my own.
 
 Over the years some features became obsolete (e.g. ghc now supports
-filename:linenumber natively via call stacks), but I got used to this style of
-tests, so I decided to try to extract it for use in cabal projects.
+filename:linenumber natively via call stacks), but I got used to this style
+of tests, so I decided to try to extract it for use in cabal projects.
+
+Here's what I like:
+
+- Automatic test discovery.  Tests are any functions named `test_*` in a
+module named `*_test.hs`.  In Karya, I use shake to collect the tests, but
+in this cabal version, I borrowed the -pgmF technique from `hspec`.
+
+- Automatic test hierarchy.  Tests are named by their module name, so you can
+run subsets by pattern matching on the name.  You don't have to collect them
+into suites, and when running them you don't have to dig through the files to
+see what they named their suites.
+
+- Low syntax overhead tests.  A test is any standalone function that calls
+test functions (like `equal`):
+
+    ```
+    module M_test where
+    import EL.Test.Global
+    import qualified M
+
+    test_something = do
+        let f = M.something
+        equal (f 10) 20
+        equal (f 20) 30
+    ```
+
+    Tests don't abort on failure, so you can put a bunch together with local
+    definitions.  There's no need to name each test case, the error message
+    will tell you module and line number.  Since `test_something` is a normal
+    `IO ()` function you can run it in ghci, which is how I mainly work.
+
+- Doesn't mess with stdout.  A check, like the `equal` function, is any
+function that prints to stdout.  A line starting with `__->` is a failure.
+This was originally the simplest stupidest thing that could work, but over
+the last 10 years there was never a reason to change it, and it turns out to
+be convenient.  Since test output is integrated into the stdout stream, it's
+in the right context with any debugging or logging.
+
+- Colored formatted diffs.  When values don't match, they are pretty printed
+and differing parts highlighted.
+
+- Various other ad-hoc conveniences: `equalFmt` attaches a formatter so you
+can get higher level diffs, `stringsLike` for matching strings with patterns,
+`equalf` and `ApproxEq` typeclass for floating point, and `quickcheck` for
+quickcheck properties with formatted diffs.
+
+### how to use
+
+See `example`, but the short version is:
+
+- Install library and `test-karya-generate` binary with `cabal install`.
+
+- Make a test module like `M_test` above.
+
+- Make `RunTests.hs` with `{-# OPTIONS_GHC -F -pgmF test-karya-generate #-}`
+
+- Make a `test-suite` like in `example`.
+
+- `cabal test`.  You can rerun the tests with `dist/build/test/test`, run
+only `M_test` with `dist/build/test/test M_test` or pass `--help` for more
+options, including running tests in parallel.

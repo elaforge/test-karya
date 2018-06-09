@@ -13,7 +13,14 @@ author: Evan Laforge
 maintainer: Evan Laforge <qdunkan@gmail.com>
 stability: stable
 tested-with: GHC>=8.0.2
-data-files:
+extra-source-files:
+    LICENSE
+    TODO
+    README.md
+    example/example.cabal
+    example/src/*.hs
+
+homepage: https://github.com/elaforge/test-karya
 source-repository head
     type: git
     location: git://github.com/elaforge/test-karya.git

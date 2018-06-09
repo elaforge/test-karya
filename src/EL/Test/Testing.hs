@@ -119,12 +119,7 @@ moduleMeta = ModuleMeta
     , tags = []
     }
 
-data Tag =
-    -- | Especially expensive to run.
-    Large
-    -- | Wants to have a conversation.  This implies the tests must be
-    -- serialized, since who wants to have a conversation in parallel.
-    | Interactive
+data Tag = Large -- ^ Especially expensive to run.
     deriving (Eq, Show)
 
 -- * equal and diff
