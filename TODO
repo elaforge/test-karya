@@ -6,6 +6,11 @@
   . dist/build/test/test --clear-dirs --output=dist/test-output .
 
 How to run GenerateRunTests?
+  - use physical CPUs instead of getNumCapabilities
+    . The cpuinfo package is meant to do this but it's linux only:
+      https://github.com/TravisWhitaker/cpuinfo/issues/1
+  * There should be a standard set of "run from cabal" flags:
+    --clear-dir --output=dist/test-output --check-output .
   / Makefile to update when out of date, cabal Setup hooks to run make.
   / Like Makefile, but a shell script that does the same thing.
   / Use Setup hooks directly.  Does cabal know how to only rebuild when

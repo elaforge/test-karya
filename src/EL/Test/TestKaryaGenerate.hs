@@ -10,18 +10,18 @@
     @IO ()@ prior to the tests.
 -}
 module EL.Test.TestKaryaGenerate (main) where
+import qualified Data.Char as Char
 import qualified Data.List as List
 import qualified Data.Map as Map
-import qualified Data.Char as Char
 import qualified Data.Text as Text
 import qualified Data.Text.IO as Text.IO
+
+import qualified EL.Private.ExtractHs as ExtractHs
+import qualified EL.Private.Regex as Regex
 import qualified System.Directory as Directory
 import qualified System.Environment
 import qualified System.FilePath as FilePath
 import qualified System.IO as IO
-
-import qualified EL.Private.ExtractHs as ExtractHs
-import qualified EL.Private.Regex as Regex
 
 import Global
 
@@ -31,8 +31,11 @@ main :: IO ()
 main = do
     args <- System.Environment.getArgs
     (baseDir, outputFile, defaultArgs) <- case args of
-        origFile : _inputFile : outputFile : defaultArgs ->
-            return (FilePath.takeDirectory origFile, outputFile, defaultArgs)
+        origFile : _inputFile : outputFile : defaultArgs -> return
+            ( FilePath.takeDirectory origFile
+            , outputFile
+            , if null defaultArgs then defaultDefaultArgs else defaultArgs
+            )
         _ -> error "expected: origFile inputFile outputFile"
     inputFiles <- find (Char.isUpper . head) ("_test.hs" `List.isSuffixOf`)
         baseDir
@@ -43,13 +46,14 @@ main = do
     progName <- System.Environment.getProgName
     Text.IO.writeFile outputFile $ header progName <> output
 
-    Text.IO.writeFile "/tmp/ghc.pgmf" $ Text.unlines
-        [ showt args
-        , ""
-        , showt inputFiles
-        , ""
-        , output
-        ]
+defaultDefaultArgs :: [String]
+defaultDefaultArgs =
+    [ "--jobs=auto"
+    , "--clear-dir"
+    , "--output=dist/test-output"
+    , "--check-output"
+    , "."
+    ]
 
 header :: String -> Text
 header program = Text.unlines
