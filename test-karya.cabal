@@ -1,6 +1,6 @@
 name: test-karya
 version: 0.0.1
-cabal-version: >= 2.0
+cabal-version: >=1.10
 build-type: Simple
 synopsis: Testing framework.
 description:
@@ -26,7 +26,7 @@ library
     build-depends:
         Diff
         , QuickCheck
-        , base
+        , base >= 4.9 && < 4.12
         , bytestring
         , containers
         , data-ordlist
