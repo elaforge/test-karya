@@ -134,6 +134,7 @@ runTests allTests flags regexes = do
     when (mbOutputDir == Nothing && CheckOutput `elem` flags) $
         quitWithUsage [] ["--check-output requires --output"]
     when (ClearDirs `elem` flags) $ do
+        Directory.createDirectoryIfMissing True Testing.tmpBaseDir
         clearDirectory Testing.tmpBaseDir
         whenJust mbOutputDir clearDirectory
     if  | List `elem` flags -> do

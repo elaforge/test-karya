@@ -496,7 +496,7 @@ inTmpDir prefix action = do
 --
 -- TODO instead of being hardcoded this should be configured per-project.
 tmpBaseDir :: FilePath
-tmpBaseDir = "dist/build/tmp-test"
+tmpBaseDir = "dist/test-tmp"
 
 -- * util
 
