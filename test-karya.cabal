@@ -18,12 +18,43 @@ source-repository head
     type: git
     location: git://github.com/elaforge/test-karya.git
 
-library Private
-    hs-source-dirs: private
+library
+    hs-source-dirs: src
     default-language: Haskell2010
     ghc-options:
         -Wall -Wno-name-shadowing -Wno-unused-do-bind -Wno-type-defaults
+    build-depends:
+        Diff
+        , QuickCheck
+        , base
+        , bytestring
+        , containers
+        , data-ordlist
+        , deepseq
+        , directory
+        , filepath
+        , ghc-prim
+        , pcre-heavy >=0.2
+        , pcre-light >=0.4
+        , text
+        , unix
+
+        -- RunTests
+        , async
+        , process
+
+        -- for pprint
+        , pretty, haskell-src
     exposed-modules:
+        EL.Test.ApproxEq
+        EL.Test.Global
+        EL.Test.Testing
+        EL.Test.RunTests
+    -- Previously I had these in a local internal library, but cabal
+    -- would install only the internal library, and not the public one.
+    -- Now I just copy paste the dependencies between the library and the
+    -- executable as is traditional with cabal, and it seems to work.
+    other-modules:
         EL.Private.ExtractHs
         EL.Private.Map
         EL.Private.PPrint
@@ -34,48 +65,6 @@ library Private
         EL.Private.File
         EL.Private.Process
         Global
-    build-depends:
-        async
-        , base
-        , bytestring
-        , containers
-        , data-ordlist
-        , directory
-        , filepath
-        , text
-        , pcre-heavy >=0.2
-        , pcre-light >=0.4
-        , process
-        -- for pprint
-        , pretty, haskell-src
-
-library
-    hs-source-dirs: src
-    default-language: Haskell2010
-    ghc-options:
-        -Wall -Wno-name-shadowing -Wno-unused-do-bind -Wno-type-defaults
-    build-depends:
-        Private
-
-        , Diff
-        , QuickCheck
-        , base
-        , containers
-        , deepseq
-        , directory
-        , filepath
-        , ghc-prim
-        , text
-        , unix
-
-        -- RunTests
-        , async
-        , process
-    exposed-modules:
-        EL.Test.ApproxEq
-        EL.Test.Global
-        EL.Test.Testing
-        EL.Test.RunTests
 
 executable test-karya-generate
     hs-source-dirs: src
@@ -85,11 +74,17 @@ executable test-karya-generate
     main-is: EL/Test/TestKaryaGenerate.hs
     ghc-options: -main-is EL.Test.TestKaryaGenerate
     build-depends:
-        Private
-        , test-karya
-
+        test-karya
         , base
+        , bytestring
         , containers
         , directory
         , filepath
         , text
+        , pcre-heavy >=0.2
+        , pcre-light >=0.4
+
+    other-modules:
+        EL.Private.ExtractHs
+        EL.Private.Regex
+        Global
