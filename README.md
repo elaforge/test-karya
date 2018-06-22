@@ -64,7 +64,7 @@ See `example`, but the short version is:
 
 - Make `RunTests.hs` with `{-# OPTIONS_GHC -F -pgmF test-karya-generate #-}`
 
-- Make a `test-suite` like in `example`.
+- Add a `test-suite` stanza to the cabal file, like in `example`.
 
 - `cabal test`.  You can rerun the tests with `dist/build/test/test`, run
 only `M_test` with `dist/build/test/test M_test` or pass `--help` for more
