@@ -62,6 +62,7 @@ library
     -- Now I just copy paste the dependencies between the library and the
     -- executable as is traditional with cabal, and it seems to work.
     other-modules:
+        EL.Private.Cpu
         EL.Private.ExtractHs
         EL.Private.Map
         EL.Private.PPrint
