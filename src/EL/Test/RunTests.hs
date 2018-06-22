@@ -133,9 +133,9 @@ runTests allTests flags regexes = do
     when (mbOutputDir == Nothing && CheckOutput `elem` flags) $
         quitWithUsage [] ["--check-output requires --output"]
     when (ClearDirs `elem` flags) $ do
-        Directory.createDirectoryIfMissing True Testing.tmpBaseDir
         clearDirectory Testing.tmpBaseDir
         whenJust mbOutputDir clearDirectory
+    Directory.createDirectoryIfMissing True Testing.tmpBaseDir
     if  | List `elem` flags -> do
             mapM_ Text.IO.putStrLn $ List.sort $ map testName $
                 if null regexes then allTests else matches
@@ -307,7 +307,7 @@ whileJust get action = Fix.fix $ \loop -> get >>= \case
 -- | Empty the directory, but don't remove it entirely, in case it's /tmp or
 -- something.
 clearDirectory :: FilePath -> IO ()
-clearDirectory dir = mapM_ rm =<< File.list dir
+clearDirectory dir = void . File.ignoreEnoent $ mapM_ rm =<< File.list dir
     where
     -- Let's not go all the way to Directory.removePathForcibly.
     rm fn = Directory.doesDirectoryExist fn >>= \isDir -> if isDir
