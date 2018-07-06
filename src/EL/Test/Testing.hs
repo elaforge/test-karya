@@ -102,7 +102,7 @@ check msg True = success msg
 checkVal :: Show a => HasCallStack => a -> (a -> Bool) -> IO Bool
 checkVal val f
     | f val = success $ "ok: " <> pshowt val
-    | otherwise = failure $ "failed:" <> pshowt val
+    | otherwise = failure $ "failed: " <> pshowt val
 
 -- * metadata
 
