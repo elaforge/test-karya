@@ -13,6 +13,7 @@ import qualified Control.Monad.Fix as Fix
 
 import qualified Data.List as List
 import qualified Data.Maybe as Maybe
+import Data.Monoid ((<>))
 import qualified Data.Set as Set
 import qualified Data.Text as Text
 import qualified Data.Text.IO as Text.IO
