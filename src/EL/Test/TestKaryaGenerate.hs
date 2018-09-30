@@ -49,7 +49,7 @@ main = do
 defaultDefaultArgs :: [String]
 defaultDefaultArgs =
     [ "--jobs=auto"
-    , "--clear-dir"
+    , "--clear-dirs"
     , "--output=dist/test-output"
     , "--check-output"
     , "."

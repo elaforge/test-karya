@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleInstances #-}
@@ -375,7 +376,9 @@ fmtQuickCheckResult result = fmap Text.strip $ case result of
     QuickCheck.GaveUp { output } -> (False, Text.pack output)
     QuickCheck.Failure { output } -> (False, Text.pack output)
     QuickCheck.NoExpectedFailure { output } -> (False, Text.pack output)
+#if ! MIN_VERSION_QuickCheck(2, 12, 0)
     QuickCheck.InsufficientCoverage { output } -> (False, Text.pack output)
+#endif
 
 -- | 'equal' for quickcheck.
 qcEqual :: (Show a, Eq a) => a -> a -> QuickCheck.Property
